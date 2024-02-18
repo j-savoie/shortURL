@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>URL Shortener</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    transition: background-color 0.3s;
+  }
+
+  /* Light mode */
+  @media (prefers-color-scheme: light) {
+    body {
+      background-color: #f9f9f9;
+      color: #333;
+    }
+    form {
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #fff;
+    }
+  }
+
+  /* Dark mode */
+  @media (prefers-color-scheme: dark) {
+    body {
+      background-color: #333;
+      color: #f9f9f9;
+    }
+    form {
+      border: 1px solid #555;
+      border-radius: 5px;
+      background-color: #444;
+    }
+  }
+
+  form {
+    width: 400px;
+    padding: 20px;
+  }
+
+  form label,
+  form input[type="text"],
+  form input[type="submit"] {
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  input[type="text"] {
+    width: calc(100% - 22px);
+    padding: 10px;
+    font-size: 16px;
+  }
+
+  input[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<div>
+  <h1 style="text-align: center;">URL Shortener</h1>
+  <form action="/cgi-bin/shorten-url.py" method="post">
+    <label for="url">Enter URL:</label>
+    <input type="text" id="url" name="url" required>
+    <input type="submit" value="Shorten URL">
+  </form>
+</div>
+</body>
+</html>
+
