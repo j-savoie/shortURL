@@ -1,0 +1,10 @@
+DELIMITER //
+
+DROP PROCEDURE IF EXISTS addUser //
+
+CREATE PROCEDURE addUser (IN username VARCHAR(100))
+BEGIN
+    INSERT INTO USER (Uname) VALUES (username);
+END //
+
+DELIMITER ;
