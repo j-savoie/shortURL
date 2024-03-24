@@ -5,7 +5,7 @@ APP_DEBUG = True
 
 DB_HOST = 'localhost'
 DB_USER = 'jsavoie9'
-DB_PSSWD = 'T0ztbW3Q'
+DB_PASSWORD = 'T0ztbW3Q'
 DB_DATABASE = DB_USER
 
 SECRET_KEY = 'd41d8cd98f00b204e9800998ecf8427e'
