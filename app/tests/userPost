@@ -1,0 +1,5 @@
+#!/bin/bash
+# This tests the POST /user/<int:id>/url endpoint 
+# This test requires you to sign in via the signin test prior to running this test
+
+curl -i -H "Content-Type: application/json" -X POST -b cookie-jar -k http://cs3103.cs.unb.ca:8028/user/420/url
