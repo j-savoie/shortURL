@@ -1,5 +1,5 @@
 DELIMITER //
-
+DROP PROCEDURE IF EXISTS addURL //
 CREATE PROCEDURE addURL(
     IN userId INT,
     IN url VARCHAR(256),
@@ -7,7 +7,7 @@ CREATE PROCEDURE addURL(
 )
 BEGIN
     IF EXISTS (SELECT 1 FROM USER WHERE ID = userId) THEN
-        INSERT INTO URL (URL, TINYURL, USERID) VALUES (url, tinyUrl, userId);
+        INSERT INTO URL (LONGURL, TINYURL, USERID) VALUES (url, tinyUrl, userId);
         
         SELECT 'URL added successfully.' AS 'Status';
     ELSE

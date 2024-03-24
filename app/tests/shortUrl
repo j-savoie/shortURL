@@ -1,0 +1,5 @@
+#!/bin/bash
+# This tests the GET /<short_url> endpoint 
+# This route requires you to sign in via the signin test prior to running this command
+
+curl -i -H "Content-Type: application/json" -X GET -b cookie-jar -k http://cs3103.cs.unb.ca:8028/asdhjk

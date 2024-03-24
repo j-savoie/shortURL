@@ -7,7 +7,7 @@
 ####################################################################################
 
 import sys
-from flask import Flask, jsonify, abort, request, make_response, session
+from flask import Flask, jsonify, abort, request, make_response, session, redirect
 from flask_restful import reqparse, Resource, Api
 from flask_session import Session
 import json
@@ -55,7 +55,34 @@ class Url(Resource):
 		response = {'description': 'In /url'}
 		responseCode = 200
 
+		# sqlProc = 'getUsersURLs'
+		# sqlArgs = [userid,]
+		# try:
+		# 	rows = db_access(sqlProc, sqlArgs)
+		# except Exception as e:
+		# 	abort(500, message = e) # server error
+		# formatted_response = [{'URL': row[0], 'TINYURL': row[1]} for row in rows]
 		return make_response(jsonify(response), responseCode)
+	
+	
+class ShortUrl(Resource):
+	# GET: Check Cookie data with Session data
+	#
+	# Example curl command:
+	# curl -i -H "Content-Type: application/json" -X GET -b cookie-jar
+	#	-k https://cs3103.cs.unb.ca:8028/<short_url>
+	def get(self, short_url):
+		sqlProc = 'getURL'
+		sqlArgs = [short_url]
+		try:
+			result = db_access(sqlProc, sqlArgs)
+		except Exception as e:
+			abort(500, e) # server error
+		if result:
+			return redirect(result[0].get('LONGURL'))
+		else:
+			return "URL not found", 404
+
 
 ####################################################################################
 #
@@ -210,6 +237,7 @@ api = Api(app)
 api.add_resource(Url, '/url')
 api.add_resource(User, '/user/<int:id>/url')
 api.add_resource(SignIn, '/signin')
+api.add_resource(ShortUrl, '/<short_url>')
 
 
 #############################################################################

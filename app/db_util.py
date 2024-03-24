@@ -18,7 +18,7 @@ def db_access(sqlProc, sqlArgs):
     dbConnection = pymysql.connect(
             host=settings.DB_HOST,
             user=settings.DB_USER,
-            password=settings.DB_PASSWORD,
+            password=settings.DB_PSSWD,
             database=settings.DB_DATABASE,
             charset='utf8mb4',
             cursorclass= pymysql.cursors.DictCursor)
