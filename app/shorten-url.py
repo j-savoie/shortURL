@@ -49,20 +49,33 @@ class Url(Resource):
 	# GET: Check Cookie data with Session data
 	#
 	# Example curl command:
-	# curl -i -H "Content-Type: application/json" -X GET -b cookie-jar
+	# curl -i -H "Content-Type: application/json" -X GET d '{"url": "https://www.youtube.com"}' -b cookie-jar
 	#	-k https://cs3103.cs.unb.ca:8028/url
 	def get(self):
-		response = {'description': 'In /url'}
-		responseCode = 200
+		if not request.json:
+			abort(400) # bad request
 
-		# sqlProc = 'getUsersURLs'
-		# sqlArgs = [userid,]
-		# try:
-		# 	rows = db_access(sqlProc, sqlArgs)
-		# except Exception as e:
-		# 	abort(500, message = e) # server error
-		# formatted_response = [{'URL': row[0], 'TINYURL': row[1]} for row in rows]
-		return make_response(jsonify(response), responseCode)
+			# Parse the json
+			parser = reqparse.RequestParser()
+		try:
+			# Check for required attributes in json document, create a dictionary
+			parser.add_argument('url', type=str, required=True)
+			request_params = parser.parse_args()
+		except:
+			abort(400) # bad request
+
+			sqlProc = 'getAllUrl'
+			sqlArgs = [request_params['url']]
+		try:
+			rows = db_access(sqlProc, sqlArgs)
+		except Exception as e:
+			abort(500, e) # server error
+		if not rows:
+			responseCode = 404
+			return make_response(jsonify(rows), responseCode)
+
+		responseCode = 200
+		return make_response(jsonify(rows), responseCode)
 	
 	
 class ShortUrl(Resource):

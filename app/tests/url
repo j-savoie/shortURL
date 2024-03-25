@@ -1,11 +1,10 @@
 #!/bin/bash
 # This tests the /signin endpoint 
 
-# Read username and password
-read -r -p "username: " username
-read -r -s -p "password: " password
+# Read url
+read -r -p "url: " url
 
 # substitute into the curl command
 curl -i -H "Content-Type: application/json" \
-   -X POST -d '{"username": "'$username'", "password": "'$password'"}' \
-   -c cookie-jar -k http://cs3103.cs.unb.ca:8028/signin
+   -X GET -d '{"username": "'$url'"}' \
+   -c cookie-jar -k http://cs3103.cs.unb.ca:8028/url
