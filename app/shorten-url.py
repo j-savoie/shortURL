@@ -16,6 +16,8 @@ from ldap3.core.exceptions import *
 import ssl #include ssl libraries
 import pymysql.cursors
 import json
+import string
+import random
 
 from db_util import db_access
 import settings
@@ -76,6 +78,52 @@ class Url(Resource):
 
 		responseCode = 200
 		return make_response(jsonify(rows), responseCode)
+	
+	def post(self):
+		if not request.json:
+			abort(400) # bad request
+
+		# Parse the json
+		parser = reqparse.RequestParser()
+		try:
+ 			# Check for required attributes in json document, create a dictionary
+			parser.add_argument('url', type=str, required=True)
+			parser.add_argument('username', type=str, required=True)
+			request_params = parser.parse_args()
+		except:
+			abort(400) # bad request
+
+		if request_params['url'] and request_params['username'] in session:
+			response = {'status': 'success'}
+			responseCode = 200
+			
+		url = request_params['url']
+		username = request_params['username']
+		sqlProc = 'getUserID'
+		sqlArgs = [username]
+		try:
+			result = db_access(sqlProc, sqlArgs)
+		except Exception as e:
+			abort(403, e) # server error
+		if result:
+			id = (result[0].get('ID'))
+		else:
+			return "User not found", 403
+		sqlProc = 'addURL'
+		characters = string.ascii_letters + string.digits
+		tiny = ''.join(random.choice(characters) for _ in range(6))
+		sqlArgs = [id, url, tiny]
+		try:
+			result = db_access(sqlProc, sqlArgs)
+		except Exception as e:
+			abort(403, e) # server error
+		if result:
+			id = (result[0].get('ID'))
+			return "http://cs3103.cs.unb.ca:8028/"+tiny, 200
+		else:
+			return "User not found", 403
+		
+
 	
 	
 class ShortUrl(Resource):
