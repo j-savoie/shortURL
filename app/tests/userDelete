@@ -1,5 +1,0 @@
-#!/bin/bash
-# This tests the DELETE /user/<int:id>/url endpoint 
-# This route requires you to sign in via the signin test prior to running this command
-
-curl -i -H "Content-Type: application/json" -X DELETE -b cookie-jar -k http://cs3103.cs.unb.ca:8028/user/420/url

@@ -151,54 +151,24 @@ class ShortUrl(Resource):
 # Routing: GET using Flask-Session
 #
 class User(Resource):
-	#
-	# Set Session and return Cookie
-	#
-	# Example curl command:
-	# curl -i -H "Content-Type: application/json" -X POST -d '{"username": "Casper", "password": "crap"}'
-	#  	-c cookie-jar -k https://cs3103.cs.unb.ca:8028/user/420/url
-	#
-    def post(self, id):
-        if 'username' in session:
-            username = session['username']
-            response = {'description': 'In POST /user/<int:id>/url'}
-            responseCode = 200
-        else:
-            response = {'status': 'fail'}
-            responseCode = 403
-		
-        return make_response(jsonify(response), responseCode)
-
 	# GET: Check Cookie data with Session data
 	#
 	# Example curl command:
 	# curl -i -H "Content-Type: application/json" -X GET -b cookie-jar
-	#	-k https://cs3103.cs.unb.ca:8028/user/420/url
-    def get(self, id):
-        if 'username' in session:
-            username = session['username']
-            response = {'description': 'In GET /user/<int:id>/url'}
-            responseCode = 200
-        else:
-            response = {'status': 'fail'}
-            responseCode = 403
+	#	-k https://cs3103.cs.unb.ca:8028/user/<int:id>/url
+	def get(self, id):
+		sqlProc = 'getUsersURLs'
+		sqlArgs = [id]
+		try:
+			rows = db_access(sqlProc, sqlArgs)
+		except Exception as e:
+			abort(500, e) # server error
+		if not rows:
+			responseCode = 404
+			return make_response(jsonify(rows), responseCode)
 
-        return make_response(jsonify(response), responseCode)
-
-	# DELETE: Check Cookie data with Session data
-	#
-	# Example curl command:
-	# curl -i -H "Content-Type: application/json" -X DELETE -b cookie-jar
-	#	-k https://cs3103.cs.unb.ca:8028/user/420/url
-    def delete(self, id):
-        if 'username' in session:
-            response = {'description': 'In DELETE /user/<int:id>/url'}
-            responseCode = 200
-        else:
-            response = {'status': 'session not present'}
-            responseCode = 404
-
-        return make_response(jsonify(response), responseCode)
+		responseCode = 200
+		return make_response(jsonify(rows), responseCode)
 
 
 ####################################################################################
@@ -245,6 +215,20 @@ class SignIn(Resource):
 				session['username'] = request_params['username']
 				response = {'status': 'success' }
 				responseCode = 201
+
+				sqlProc = 'getUserID'
+				sqlArgs = ['username']
+				try:
+					result = db_access(sqlProc, sqlArgs)
+				except Exception as e:
+					abort(500, e) # server error
+				if not result:
+					sqlProc = 'addUser'
+					sqlArgs = ['username']
+					try:
+						result = db_access(sqlProc, sqlArgs)
+					except Exception as e:
+						abort(500, e) # server error					
 			except LDAPException:
 				response = {'status': 'Access denied'}
 				responseCode = 403
