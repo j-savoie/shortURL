@@ -1,0 +1,7 @@
+#!/bin/bash
+# This tests the /url endpoint 
+
+# substitute into the curl command
+curl -i -H "Content-Type: application/json" \
+   -X POST -d '{"username": "'jsavoie9'", "url": "'https://github.com/j-savoie/'"}' \
+   -c cookie-jar -k http://cs3103.cs.unb.ca:8028/url
