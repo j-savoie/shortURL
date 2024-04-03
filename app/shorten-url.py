@@ -47,6 +47,12 @@ def not_found(error):
 # Routes for the /url endpoint
 # Routing: GET using Flask-Session
 #
+
+class Root(Resource):
+   # get method. What might others be aptly named? (hint: post)
+	def get(self):
+		return app.send_static_file('index.html')
+
 class Url(Resource):
 	# GET: Check Cookie data with Session data
 	#
@@ -279,6 +285,7 @@ class SignIn(Resource):
 # Identify/create endpoints and endpoint objects
 #
 api = Api(app)
+api.add_resource(Root,'/')
 api.add_resource(Url, '/url')
 api.add_resource(User, '/user/<int:id>/url')
 api.add_resource(SignIn, '/signin')
