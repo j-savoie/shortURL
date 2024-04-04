@@ -1,82 +1,128 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>URL Shortener</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    transition: background-color 0.3s;
-  }
-
-  /* Light mode */
-  @media (prefers-color-scheme: light) {
-    body {
-      background-color: #f9f9f9;
-      color: #333;
-    }
-    form {
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      background-color: #fff;
-    }
-  }
-
-  /* Dark mode */
-  @media (prefers-color-scheme: dark) {
-    body {
-      background-color: #333;
-      color: #f9f9f9;
-    }
-    form {
-      border: 1px solid #555;
-      border-radius: 5px;
-      background-color: #444;
-    }
-  }
-
-  form {
-    width: 400px;
-    padding: 20px;
-  }
-
-  form label,
-  form input[type="text"],
-  form input[type="submit"] {
-    display: block;
-    margin-bottom: 10px;
-  }
-
-  input[type="text"] {
-    width: calc(100% - 22px);
-    padding: 10px;
-    font-size: 16px;
-  }
-
-  input[type="submit"] {
-    width: 100%;
-    padding: 10px;
-    font-size: 16px;
-    cursor: pointer;
-  }
-</style>
-</head>
-<body>
-<div>
-  <h1 style="text-align: center;">URL Shortener</h1>
-  <form action="/cgi-bin/shorten-url.py" method="post">
-    <label for="url">Enter URL:</label>
-    <input type="text" id="url" name="url" required>
-    <input type="submit" value="Shorten URL">
-  </form>
-</div>
+<html>
+  <head>
+    <title>Short URL</title>
+  </head>
+  <body>
+    <div class="container-fluid" id="app">
+      <div class="jumbotron jumbotron-fluid text-center">
+        <h1>Welcome to ShortURL<sup><small>TM</small></sup></sup></h1>
+        <p><em>Your source for shortenned URLs</em></p>
+      <div v-if="!authenticated" class="form-group text-center">
+        <input class="col-4 mx-auto form-control" type="text" name="username" v-model="input.username" placeholder="Username" />
+        <input class="col-4 mx-auto form-control" type="password" name="password" v-model="input.password" placeholder="Password" />
+        <button class="col-4 btn btn-outline-success" type="button" v-on:click="login()">Login</button>
+      </div>
+      <div v-else class="text-center">
+        <button type="button" class="btn btn-outline-danger" v-on:click="logout()">Logout</button>
+        <button type="button" class="btn btn-outline-primary" v-on:click="fetchURLs()">List URLs</button>
+      </div>
+    </div>
+    <div v-if="authenticated">
+      <div v-if="urlData != null" id="urlList">
+        <ul class="list-group">
+          <div v-for="url in urlData">
+            <li class="list-group-item col-7 mx-auto">
+              <div class="d-flex w-100 justify-content-between">
+                {{url.url}}
+                <div class="btn-group-xs">
+                  <button class="utilityBtn text-success" v-on:click="selectSchool(school.schoolId)">✎</button>
+                  <button class="utilityBtn text-danger" v-on:click="deleteSchool(school.schoolId)">x</button>
+                </div>
+              </div>
+            </li>
+          </div>
+        </ul>
+      </div>
+    </div>
+    <modal v-if="editModal" @close="hideModal">
+      <!--
+        you can use custom content here to overwrite
+        default content
+      -->
+      <div slot="header" class="modal-header">
+        Edit School Data
+      </div>
+      <div slot="body">
+        <div class="form-group col-6">
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text  modal-prepend">School Name</span>
+            </div>
+            <input class="col-8 form-control" type="text" id="schoolName" v-model="selectedSchool.name" placeholder="School Name" />
+          </div>
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text modal-prepend">Province</span>
+            </div>
+            <input class="col-8 form-control" type="text" id="schoolProvince" v-model="selectedSchool.province" placeholder="School Province" />
+          </div>
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text  modal-prepend">School Level</span>
+            </div>
+            <input class="col-8 form-control" type="text" id="schoolLevel" v-model="selectedSchool.level" placeholder="School Level" />
+          </div>
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text modal-prepend">School Language</span>
+            </div>
+            <div class="form-check">
+              <label class="radio-inline" for="english">
+                <input type="radio" name="language" id="english"
+                  v-bind:value="language.english" v-model="selectedSchool.language"> English
+              </label>
+            </div>
+            <div class="form-check">
+              <label class="radio-inline" for="french">
+                <input type="radio" name="language" id="french"
+                  v-bind:value="language.french" v-model="selectedSchool.language"> French
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div slot="footer">
+        <button type="button" class="btn btn-secondary" v-on:click="hideModal()">Close</button>
+      </div>
+    </modal>
+    <!-- template for the modal component -->
+    <script type="text/x-template" id="modal-template">
+      <transition name="modal">
+        <div class="modal-backdrop">
+        <div class="modal">
+          <header class="modal-header">
+            <slot name="header">
+              This is the default tile!
+              <button type="button" class="btn-close" @click="hideModal()">
+                x
+              </button>
+            </slot>
+          </header>
+          <section class="modal-body">
+            <slot name="body">
+              I'm the default body!
+            </slot>
+           </section>
+           <footer class="modal-footer">
+              <slot name="footer">
+                I'm the default footer!
+                <button type="button" class="btn-green" @click="hideModal()">
+                  Close me!
+                </button>
+              </slot>
+            </footer>
+          </div>
+        </div>
+      </transition>
+    </script>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"/>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/static/url.js" ></script>
+  <link rel="stylesheet" href="/static/url.css"/>
 </body>
 </html>
-

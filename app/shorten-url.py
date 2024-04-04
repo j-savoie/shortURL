@@ -188,7 +188,7 @@ class SignIn(Resource):
 	#
 	# Example curl command:
 	# curl -i -H "Content-Type: application/json" -X POST -d '{"username": "Casper", "password": "crap"}'
-	#  	-c cookie-jar -k https://cs3103.cs.unb.ca:61340/signin
+	#  	-c cookie-jar -k https://cs3103.cs.unb.ca:8028/signin
 	#
 	def post(self):
 		if not request.json:
@@ -233,8 +233,13 @@ class SignIn(Resource):
 					sqlArgs = ['username']
 					try:
 						result = db_access(sqlProc, sqlArgs)
+						sqlProc = 'getUserID'
+						result = db_access(sqlProc, sqlArgs)	
 					except Exception as e:
-						abort(500, e) # server error					
+						abort(500, e) # server error
+				print(result)
+				session['id'] = result[0]['ID']	
+				print(session)			
 			except LDAPException:
 				response = {'status': 'Access denied'}
 				responseCode = 403

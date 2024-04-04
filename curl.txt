@@ -1,0 +1,6 @@
+curl -i -H "Content-Type: application/json" -X GET -b cookie-jar -k https://cs3103.cs.unb.ca:8028/user/1/url
+
+curl -i -H "Content-Type: application/json" -X POST -d '{"username": "jsavoie9", "password": "Plmplm08\!\!\!\!"}'	-c cookie-jar -k https://cs3103.cs.unb.ca:8028/signin
+
+curl -i -H "Content-Type: application/json" -X POST -d '{"username": "jsavoie9", "password": "Plmplm08\!\!\!\!"}' -c cookie-jar -k https://cs3103.cs.unb.ca:8028/signin
+
