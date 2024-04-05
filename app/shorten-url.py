@@ -51,7 +51,7 @@ def not_found(error):
 class Root(Resource):
    # get method. What might others be aptly named? (hint: post)
 	def get(self):
-		return app.send_static_file('index.html')
+		return app.send_static_file('static/index.html')
 
 class Url(Resource):
 	# GET: Check Cookie data with Session data
@@ -125,9 +125,39 @@ class Url(Resource):
 			abort(403, e) # server error
 		if result:
 			id = (result[0].get('ID'))
-			return "http://cs3103.cs.unb.ca:8028/"+tiny, 200
+			return "https://cs3103.cs.unb.ca:8028/"+tiny, 200
 		else:
 			return "User not found", 403
+	#TODO
+	def delete(self):
+		if not request.json:
+			abort(400) # bad request
+		# Parse the json
+		parser = reqparse.RequestParser()
+		try:
+ 			# Check for required attributes in json document, create a dictionary
+			parser.add_argument('url', type=str, required=True)
+			parser.add_argument('username', type=str, required=True)
+			request_params = parser.parse_args()
+		except:
+			abort(400) # bad request
+		if request_params['url'] and request_params['username'] in session:
+			response = {'status': 'success'}
+			responseCode = 200
+			
+		url = request_params['url']
+		username = request_params['username']
+		sqlProc = 'removeURL'
+		sqlArgs = [username, url]
+		try:
+			result = db_access(sqlProc, sqlArgs)
+		except Exception as e:
+			abort(403, e) # server error
+		if result:
+			return "URL Removed"
+		else:
+			return "User not found", 403
+
 		
 
 	
@@ -237,9 +267,8 @@ class SignIn(Resource):
 						result = db_access(sqlProc, sqlArgs)	
 					except Exception as e:
 						abort(500, e) # server error
-				print(result)
 				session['id'] = result[0]['ID']	
-				print(session)			
+				response = {'status': 'success', 'id' : result[0]['ID']	}	
 			except LDAPException:
 				response = {'status': 'Access denied'}
 				responseCode = 403
@@ -306,9 +335,9 @@ if __name__ == "__main__":
 	#	2. run the makeCert.sh script and answer the questions.
 	#	   It will by default generate the files with the same names specified below.
 	#
-	#context = ('cert.pem', 'key.pem') # Identify the certificates you've generated.
+	context = ('cert.pem', 'key.pem') # Identify the certificates you've generated.
 	app.run(
 		host=settings.APP_HOST,
 		port=settings.APP_PORT,
-		#ssl_context=context,
+		ssl_context=context,
 		debug=settings.APP_DEBUG)

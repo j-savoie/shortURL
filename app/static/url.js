@@ -8,14 +8,15 @@ var app = new Vue({
 
   //------- data --------
   data: {
-    serviceURL: "http://cs3103.cs.unb.ca:8028",
+    serviceURL: "https://cs3103.cs.unb.ca:8028",
     authenticated: false,
     urlData: null,
     loggedIn: null,
     editModal: false,
     input: {
       username: "",
-      password: ""
+      password: "",
+      addUrlData: "",
     },
     selectedURL: {
       language: "",
@@ -52,7 +53,7 @@ var app = new Vue({
         .then(response => {
             if (response.data.status == "success") {
               this.authenticated = true;
-              this.loggedIn = response.data.user_id;
+              this.loggedIn = response.data.id;
             }
         })
         .catch(e => {
@@ -81,21 +82,57 @@ var app = new Vue({
 
     fetchURLs() {
       axios
-      .get(this.serviceURL+"user/" + this.loggedIn + "/url")
+      .get(this.serviceURL+"/user/" + this.loggedIn + "/url")
       .then(response => {
         console.log(response.data);
           this.urlData = response.data;
       })
       .catch(e => {
-        alert("Unable to load the school data");
+        alert("Unable to load the url data");
         console.log(e);
       });
     },
-
-    deleteSchool(schoolId) {
-      alert("This feature not available until YOUR version of schools.")
+    //TODO
+    deleteURL(urlId) {
+      axios
+      .delete(this.serviceURL+"/url", {
+        "url": urlId,  
+        "username": this.loggedIn
+      }, {headers: {'Content-Type': 'application/json'}})
+      .then(response => {
+          if (response.data.status == "success") {
+            alert("The URL was deleted successfully");
+          }
+      })
+      .catch(e => {
+          alert("The URL was not deleted successfully");
+          this.input.password = "";
+          console.log(e);
+      });
     },
 
+    addUrl(){
+      if (this.input.addUrl != "") {
+        axios
+        .post(this.serviceURL+"/url", {
+            "username": this.input.username,
+            "url": this.input.addUrlData
+        }, {headers: {'Content-Type': 'application/json'}})
+        .then(response => {
+            if (response.data.status == "success") {
+              this.authenticated = true;
+              this.loggedIn = response.data.id;
+            }
+        })
+        .catch(e => {
+            alert("The URL was not added successfully");
+            this.input.password = "";
+            console.log(e);
+        });
+      } else {
+        alert("please do not leave blank");
+      }
+    },
 
     selectSchool(schoolId) {
     	this.showModal();
