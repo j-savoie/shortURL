@@ -54,6 +54,7 @@ var app = new Vue({
             if (response.data.status == "success") {
               this.authenticated = true;
               this.loggedIn = response.data.id;
+              this.fetchURLs();
             }
         })
         .catch(e => {
@@ -85,7 +86,10 @@ var app = new Vue({
       .get(this.serviceURL+"/user/" + this.loggedIn + "/url")
       .then(response => {
         console.log(response.data);
-          this.urlData = response.data;
+        if (response.data.length == 0) {
+          alert("User has no URLs saved")
+        }
+        this.urlData = response.data;
       })
       .catch(e => {
         alert("Unable to load the url data");
@@ -96,11 +100,14 @@ var app = new Vue({
     deleteURL(urlId) {
       axios
       .delete(this.serviceURL+"/url", {
-        "url": urlId,  
-        "username": this.loggedIn
-      }, {headers: {'Content-Type': 'application/json'}})
+        data: {
+          "url": urlId,  
+          "username": this.loggedIn
+        }
+      }, {headers: {'Content-Type': 'application/json'}}) 
       .then(response => {
-          if (response.data.status == "success") {
+          console.log(response)
+          if (response.data.status == 200) {
             alert("The URL was deleted successfully");
           }
       })
@@ -122,6 +129,7 @@ var app = new Vue({
             if (response.data.status == "success") {
               this.authenticated = true;
               this.loggedIn = response.data.id;
+              this.fetchURLs();
             }
         })
         .catch(e => {

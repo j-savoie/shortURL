@@ -29,9 +29,10 @@
           <div v-for="url in urlData">
             <li class="list-group-item col-7 mx-auto">
               <div class="d-flex w-100 justify-content-between">
-                {{url.LONGURL}} || <a>https://cs3103.cs.unb.ca:8028/{{url.TINYURL}}</a>
+                <!-- TODO use a table -->
+               <span> {{url.LONGURL}}</span><span> https://cs3103.cs.unb.ca:8028/{{url.TINYURL}} </span>
                 <div class="btn-group-xs">
-                  <button class="utilityBtn text-danger" v-on:click="deleteURL(url.TINYURL)">x</button>
+                  <button class="utilityBtn text-danger" v-on:click="deleteURL(url.TINYURL);fetchURLs();">x</button>
                 </div>
               </div>
             </li>
