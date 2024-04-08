@@ -132,21 +132,15 @@ class Url(Resource):
 	def delete(self):
 		if not request.json:
 			abort(400) # bad request
-		# Parse the json
-		parser = reqparse.RequestParser()
-		try:
- 			# Check for required attributes in json document, create a dictionary
-			parser.add_argument('url', type=str, required=True)
-			parser.add_argument('username', type=str, required=True)
-			request_params = parser.parse_args()
-		except:
-			abort(400) # bad request
-		if request_params['url'] and request_params['username'] in session:
+		
+		url = request.json.get('url')
+		username = request.json['username'] # This is returning id for some reason
+		print(request.json['username'])
+
+		if url and username in session:
 			response = {'status': 'success'}
 			responseCode = 200
 			
-		url = request_params['url']
-		username = request_params['username']
 		sqlProc = 'removeURL'
 		sqlArgs = [username, url]
 		try:
@@ -154,9 +148,9 @@ class Url(Resource):
 		except Exception as e:
 			abort(403, e) # server error
 		if result:
-			return "URL Removed"
+			return make_response({'status': 'Record was successfully deleted'}, 200)
 		else:
-			return "User not found", 403
+			return make_response({'status': 'Record not deleted'}, 403)
 
 		
 
@@ -199,9 +193,6 @@ class User(Resource):
 			rows = db_access(sqlProc, sqlArgs)
 		except Exception as e:
 			abort(500, e) # server error
-		if not rows:
-			responseCode = 404
-			return make_response(jsonify(rows), responseCode)
 
 		responseCode = 200
 		return make_response(jsonify(rows), responseCode)
@@ -220,6 +211,7 @@ class SignIn(Resource):
 	# curl -i -H "Content-Type: application/json" -X POST -d '{"username": "Casper", "password": "crap"}'
 	#  	-c cookie-jar -k https://cs3103.cs.unb.ca:8028/signin
 	#
+	# FIX THIS SO MY USER WORKS
 	def post(self):
 		if not request.json:
 			abort(400) # bad request
@@ -253,23 +245,18 @@ class SignIn(Resource):
 				responseCode = 201
 
 				sqlProc = 'getUserID'
-				sqlArgs = ['username']
-				try:
-					result = db_access(sqlProc, sqlArgs)
-				except Exception as e:
-					abort(500, e) # server error
-				if not result:
+				sqlArgs = (request_params['username'],)
+				result = db_access(sqlProc, sqlArgs)
+				if len(result) == 0:
 					sqlProc = 'addUser'
-					sqlArgs = ['username']
-					try:
-						result = db_access(sqlProc, sqlArgs)
-						sqlProc = 'getUserID'
-						result = db_access(sqlProc, sqlArgs)	
-					except Exception as e:
-						abort(500, e) # server error
+					result = db_access(sqlProc, sqlArgs)
+
 				session['id'] = result[0]['ID']	
 				response = {'status': 'success', 'id' : result[0]['ID']	}	
-			except LDAPException:
+			except Exception as e:
+				print("An error has occurred:", str(e))
+				print("Type of exception:", type(e))
+				print("More info:", e.args)
 				response = {'status': 'Access denied'}
 				responseCode = 403
 			finally:
