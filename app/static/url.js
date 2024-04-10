@@ -26,21 +26,7 @@ var app = new Vue({
       schoolId: ""
     }
   },
-  //------- lifecyle hooks --------
-  /*mounted: function() {
-    axios
-    .get(this.serviceURL+"/signin")
-    .then(response => {
-      if (response.data.status == "success") {
-        this.authenticated = true;
-        this.loggedIn = response.data.user_id;
-      }
-    })
-    .catch(error => {
-        this.authenticated = false;
-        console.log(error);
-    });
-  },*/
+
   //------- methods --------
   methods: {
     login() {
@@ -67,7 +53,6 @@ var app = new Vue({
       }
     },
 
-
     logout() {
       axios
       .delete(this.serviceURL+"/signin")
@@ -78,7 +63,6 @@ var app = new Vue({
         console.log(e);
       });
     },
-
 
     fetchURLs() {
       axios
@@ -95,6 +79,7 @@ var app = new Vue({
         console.log(e);
       });
     },
+
     deleteURL(urlId) {
       axios
       .delete(this.serviceURL+"/url", {
