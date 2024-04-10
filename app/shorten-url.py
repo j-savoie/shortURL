@@ -44,14 +44,14 @@ def not_found(error):
 
 ####################################################################################
 #
-# Routes for the /url endpoint
-# Routing: GET using Flask-Session
+# Endpoints
 #
 
 class Root(Resource):
-   # get method. What might others be aptly named? (hint: post)
 	def get(self):
-		return app.send_static_file('static/index.html')
+		print('Test')
+		return app.send_static_file('index.html')
+
 
 class Url(Resource):
 	# GET: Check Cookie data with Session data
@@ -128,7 +128,7 @@ class Url(Resource):
 			return "https://cs3103.cs.unb.ca:8028/"+tiny, 200
 		else:
 			return "User not found", 403
-	#TODO
+
 	def delete(self):
 		if not request.json:
 			abort(400) # bad request
@@ -152,10 +152,7 @@ class Url(Resource):
 		else:
 			return make_response({'status': 'Record not deleted'}, 403)
 
-		
 
-	
-	
 class ShortUrl(Resource):
 	# GET: Check Cookie data with Session data
 	#

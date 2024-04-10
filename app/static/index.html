@@ -15,7 +15,6 @@
       </div>
       <div v-else class="text-center">
         <div class="form-group text-center">
-          <!-- TODO -->
           <input class="col-4 mx-auto form-control" type="text" name="url" v-model="input.addUrlData" placeholder="http://urlhere.com" />
           <button class="col-4 btn btn-outline-success" type="button" v-on:click="addAndFetchURLs()">Shorten URL</button>
         </div>
@@ -29,8 +28,7 @@
           <div v-for="url in urlData">
             <li class="list-group-item col-7 mx-auto">
               <div class="d-flex w-100 justify-content-between">
-                <!-- TODO use a table -->
-               <span> {{url.LONGURL}}</span><span> https://cs3103.cs.unb.ca:8028/{{url.TINYURL}} </span>
+               <span>Original: {{url.LONGURL}}</span><span>Shortened: https://cs3103.cs.unb.ca:8028/{{url.TINYURL}} </span>
                 <div class="btn-group-xs">
                   <button class="utilityBtn text-danger" v-on:click="deleteURL(url.TINYURL);fetchURLs();">x</button>
                   <button class="utilityBtn text-danger" v-on:click="copy(url.TINYURL)">📄</button>
