@@ -69,7 +69,6 @@ var app = new Vue({
 
 
     logout() {
-      alert("No magic on the server yet. You'll have to write the logout code there.");
       axios
       .delete(this.serviceURL+"/signin")
       .then(response => {
@@ -96,7 +95,6 @@ var app = new Vue({
         console.log(e);
       });
     },
-    //TODO
     deleteURL(urlId) {
       axios
       .delete(this.serviceURL+"/url", {
@@ -119,7 +117,7 @@ var app = new Vue({
     },
 
     addUrl(){
-      if (this.input.addUrl != "") {
+      if (validate(this.input.addUrlData)) {
         axios
         .post(this.serviceURL+"/url", {
             "username": this.input.username,
@@ -138,35 +136,30 @@ var app = new Vue({
             console.log(e);
         });
       } else {
-        alert("please do not leave blank");
+        alert("This URL is invalid");
       }
     },
 
-    selectSchool(schoolId) {
-    	this.showModal();
-      for (x in this.schoolsData) {
-        if (this.schoolsData[x].schoolId == schoolId) {
-          this.selectedSchool = this.schoolsData[x];
-        }
-      }
+    addAndFetchURLs(){
+      this.addUrl();
+      this.fetchURLs();
     },
 
-
-    updateSchool(updatedSchool) {
-      alert("This feature not available until YOUR version of schools.")
-      // TODO: use axios.update to send the updated record to the service
-    },
-
-    showModal() {
-      this.editModal = true;
-    },
-
-
-    hideModal() {
-      this.editModal = false;
+    copy(tinyURL){
+      copyUrl = "https://cs3103.cs.unb.ca:8028/" + tinyURL
+      navigator.clipboard.writeText(copyUrl)
     }
-
   }
   //------- END methods --------
 
 });
+
+function validate(url){
+  try{
+    new URL(url)
+    return true;
+  }
+  catch(e){
+    return false;
+  }
+}

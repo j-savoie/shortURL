@@ -17,7 +17,7 @@
         <div class="form-group text-center">
           <!-- TODO -->
           <input class="col-4 mx-auto form-control" type="text" name="url" v-model="input.addUrlData" placeholder="http://urlhere.com" />
-          <button class="col-4 btn btn-outline-success" type="button" v-on:click="addUrl()">Shorten URL</button>
+          <button class="col-4 btn btn-outline-success" type="button" v-on:click="addAndFetchURLs()">Shorten URL</button>
         </div>
         <button type="button" class="btn btn-outline-danger" v-on:click="logout()">Logout</button>
         <button type="button" class="btn btn-outline-primary" v-on:click="fetchURLs()">List URLs</button>
@@ -33,6 +33,7 @@
                <span> {{url.LONGURL}}</span><span> https://cs3103.cs.unb.ca:8028/{{url.TINYURL}} </span>
                 <div class="btn-group-xs">
                   <button class="utilityBtn text-danger" v-on:click="deleteURL(url.TINYURL);fetchURLs();">x</button>
+                  <button class="utilityBtn text-danger" v-on:click="copy(url.TINYURL)">📄</button>
                 </div>
               </div>
             </li>
@@ -40,88 +41,8 @@
         </ul>
       </div>
     </div>
-    <modal v-if="editModal" @close="hideModal">
-      <!--
-        you can use custom content here to overwrite
-        default content
-      -->
-      <div slot="header" class="modal-header">
-        Edit School Data
-      </div>
-      <div slot="body">
-        <div class="form-group col-6">
-          <div class="input-group mb-3">
-            <div class="input-group-prepend">
-              <span class="input-group-text  modal-prepend">School Name</span>
-            </div>
-            <input class="col-8 form-control" type="text" id="schoolName" v-model="selectedSchool.name" placeholder="School Name" />
-          </div>
-          <div class="input-group mb-3">
-            <div class="input-group-prepend">
-              <span class="input-group-text modal-prepend">Province</span>
-            </div>
-            <input class="col-8 form-control" type="text" id="schoolProvince" v-model="selectedSchool.province" placeholder="School Province" />
-          </div>
-          <div class="input-group mb-3">
-            <div class="input-group-prepend">
-              <span class="input-group-text  modal-prepend">School Level</span>
-            </div>
-            <input class="col-8 form-control" type="text" id="schoolLevel" v-model="selectedSchool.level" placeholder="School Level" />
-          </div>
-          <div class="input-group mb-3">
-            <div class="input-group-prepend">
-              <span class="input-group-text modal-prepend">School Language</span>
-            </div>
-            <div class="form-check">
-              <label class="radio-inline" for="english">
-                <input type="radio" name="language" id="english"
-                  v-bind:value="language.english" v-model="selectedSchool.language"> English
-              </label>
-            </div>
-            <div class="form-check">
-              <label class="radio-inline" for="french">
-                <input type="radio" name="language" id="french"
-                  v-bind:value="language.french" v-model="selectedSchool.language"> French
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div slot="footer">
-        <button type="button" class="btn btn-secondary" v-on:click="hideModal()">Close</button>
-      </div>
-    </modal>
-    <!-- template for the modal component -->
-    <script type="text/x-template" id="modal-template">
-      <transition name="modal">
-        <div class="modal-backdrop">
-        <div class="modal">
-          <header class="modal-header">
-            <slot name="header">
-              This is the default tile!
-              <button type="button" class="btn-close" @click="hideModal()">
-                x
-              </button>
-            </slot>
-          </header>
-          <section class="modal-body">
-            <slot name="body">
-              I'm the default body!
-            </slot>
-           </section>
-           <footer class="modal-footer">
-              <slot name="footer">
-                I'm the default footer!
-                <button type="button" class="btn-green" @click="hideModal()">
-                  Close me!
-                </button>
-              </slot>
-            </footer>
-          </div>
-        </div>
-      </transition>
-    </script>
-  </div>
+    <div>
+    </div>
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"/>
